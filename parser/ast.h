@@ -1,6 +1,23 @@
 #include <string>
 #include <vector>
-#include<map>
+#include <map>
+#include <stack>
+#include <set>
+
+#include "llvm/ADT/APFloat.h"
+#include "llvm/ADT/STLExtras.h"
+#include "llvm/IR/BasicBlock.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Value.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/Type.h"
+#include "llvm/IR/Verifier.h"
+#include "llvm/Support/raw_ostream.h"
+
 
 using namespace std;
 
@@ -53,34 +70,31 @@ class ASTExprTernaryOp;
 class ASTvisitor
 {
 public:
-    virtual void visit(ASTProg &node) = 0;
-    // virtual void visit(ASTStatement &node) = 0;
-    virtual void visit(ASTStatementCompound &node) = 0;   
-    virtual void visit(ASTStatementVariableDeclaration &node) = 0;
-    virtual void visit(ASTStatementArrayDeclaration &node) = 0;
-    virtual void visit(ASTStatementVariableAssignment &node) = 0;
-    virtual void visit(ASTStatement1DArrayElementAssignment &node) = 0;
-    virtual void visit(ASTStatement2DArrayElementAssignment &node) = 0;
-    virtual void visit(ASTStatementFunctionDeclaration &node) = 0;
-    // virtual void visit(ASTStatementFunctionDeclarationArgument &node) = 0;
-    virtual void visit(ASTStatementFunctionDeclarationArgumentVariable &node) = 0;
-    virtual void visit(ASTStatementFunctionDeclarationArgumentArray1D &node) = 0;
-    virtual void visit(ASTStatementFunctionDeclarationArgumentArray2D &node) = 0;
-    virtual void visit(ASTStatementIfElse &node) = 0;
-    virtual void visit(ASTStatementForLoop &node) = 0;
-    virtual void visit(ASTStatementWhileLoop &node) = 0;
-    virtual void visit(ASTStatementReturn &node) = 0;
-    // virtual void visit(ASTExpr &node) = 0;
-    virtual void visit(ASTExprFunctionCall &node) = 0;
-    virtual void visit(ASTExprStringLiteral &node) = 0;
-    virtual void visit(ASTExprIntegerLiteral &node) = 0;
-    virtual void visit(ASTExprCharLiteral &node) = 0;
-    virtual void visit(ASTExprVariable &node) = 0;
-    virtual void visit(ASTExpr1DArrayElement &node) = 0;
-    virtual void visit(ASTExpr2DArrayElement &node) = 0;
-    virtual void visit(ASTExprUnaryOp &node) = 0;
-    virtual void visit(ASTExprBinaryOp &node) = 0;
-    virtual void visit(ASTExprTernaryOp &node) = 0;
+    virtual llvm::Value* visit(ASTProg &node) = 0;
+    virtual llvm::Value* visit(ASTStatementCompound &node) = 0;   
+    virtual llvm::Value* visit(ASTStatementVariableDeclaration &node) = 0;
+    virtual llvm::Value* visit(ASTStatementArrayDeclaration &node) = 0;
+    virtual llvm::Value* visit(ASTStatementVariableAssignment &node) = 0;
+    virtual llvm::Value* visit(ASTStatement1DArrayElementAssignment &node) = 0;
+    virtual llvm::Value* visit(ASTStatement2DArrayElementAssignment &node) = 0;
+    virtual llvm::Value* visit(ASTStatementFunctionDeclaration &node) = 0;
+    virtual llvm::Value* visit(ASTStatementFunctionDeclarationArgumentVariable &node) = 0;
+    virtual llvm::Value* visit(ASTStatementFunctionDeclarationArgumentArray1D &node) = 0;
+    virtual llvm::Value* visit(ASTStatementFunctionDeclarationArgumentArray2D &node) = 0;
+    virtual llvm::Value* visit(ASTStatementIfElse &node) = 0;
+    virtual llvm::Value* visit(ASTStatementForLoop &node) = 0;
+    virtual llvm::Value* visit(ASTStatementWhileLoop &node) = 0;
+    virtual llvm::Value* visit(ASTStatementReturn &node) = 0;
+    virtual llvm::Value* visit(ASTExprFunctionCall &node) = 0;
+    virtual llvm::Value* visit(ASTExprStringLiteral &node) = 0;
+    virtual llvm::Value* visit(ASTExprIntegerLiteral &node) = 0;
+    virtual llvm::Value* visit(ASTExprCharLiteral &node) = 0;
+    virtual llvm::Value* visit(ASTExprVariable &node) = 0;
+    virtual llvm::Value* visit(ASTExpr1DArrayElement &node) = 0;
+    virtual llvm::Value* visit(ASTExpr2DArrayElement &node) = 0;
+    virtual llvm::Value* visit(ASTExprUnaryOp &node) = 0;
+    virtual llvm::Value* visit(ASTExprBinaryOp &node) = 0;
+    virtual llvm::Value* visit(ASTExprTernaryOp &node) = 0;
 };
 
 class ASTnode
@@ -89,8 +103,6 @@ public:
     virtual ~ASTnode()
     {
     }
-
-    virtual void accept(ASTvisitor &V) = 0;
 };
 
 class ASTStatement : public ASTnode
@@ -99,8 +111,6 @@ public:
     virtual ~ASTStatement()
     {
     }
-
-    virtual void accept(ASTvisitor &V) = 0;
 };
 
 class ASTProg : public ASTnode
@@ -112,17 +122,15 @@ public:
     map<string, vardetails> global_variables;
     map<string, fndetails> global_fns;
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
 class ASTExpr : public ASTnode
 {
 public:
-
-    virtual void accept(ASTvisitor &V) = 0;
 };
 
 
@@ -138,9 +146,9 @@ public:
         return value;
     }
     
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -156,9 +164,9 @@ public:
         return value;
     }
     
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -174,9 +182,9 @@ public:
         return value;
     }
     
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -192,9 +200,9 @@ public:
         return name;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -215,9 +223,9 @@ public:
         return index;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -243,9 +251,9 @@ public:
         return cindex;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -268,9 +276,9 @@ public:
         return e;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -299,9 +307,9 @@ public:
         return bin_operator;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -331,9 +339,9 @@ public:
         return third;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -352,9 +360,9 @@ public:
         return name;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 
 };
@@ -365,9 +373,9 @@ public:
 
     vector<ASTStatement *> statements;
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -396,9 +404,9 @@ public:
         return expr;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 
 };
@@ -435,9 +443,9 @@ public:
         return nc;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 
 };
@@ -461,9 +469,9 @@ public:
         return expr;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -492,9 +500,9 @@ public:
         return expr;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 
 };
@@ -530,9 +538,9 @@ public:
         return expr;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 
 };
@@ -543,8 +551,6 @@ public:
     virtual ~ASTStatementFunctionDeclarationArgument()
     {
     }
-
-    virtual void accept(ASTvisitor &V) = 0;
 };
 
 class ASTStatementFunctionDeclarationArgumentVariable : ASTStatementFunctionDeclarationArgument
@@ -566,9 +572,9 @@ public:
         return name;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -591,9 +597,9 @@ public:
         return name;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -622,9 +628,9 @@ public:
         return nc;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -656,9 +662,9 @@ public:
     }
 
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 
 };
@@ -689,9 +695,9 @@ public:
         return elseStatement;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -727,9 +733,9 @@ public:
         return statement;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -752,9 +758,9 @@ public:
         return statement;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 
@@ -771,9 +777,9 @@ public:
         return returnval;
     }
 
-    virtual void accept(ASTvisitor &v)
+    llvm::Value* accept(ASTvisitor &v)
     {
-        v.visit(*this);
+        return v.visit(*this);
     }
 };
 

@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "g++ - Build and debug active file Minic",
+            "name": "clang++ - Build and debug active file Minic",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/Minic",
