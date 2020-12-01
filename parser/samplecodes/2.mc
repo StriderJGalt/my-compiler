@@ -1,6 +1,6 @@
 B prime(I n)
 {
-	I flag = 1;
+	B flag = 1;
 	FOR(I i=2;flag & i<n/2;i=i+1;)
 	{
 		IF((n%i)==0)
@@ -11,16 +11,16 @@ B prime(I n)
 	RET flag;
 }
 
-I MAIN() {
-	I n;
-	scan("%d",n);
+I main() {
+	I n = 0;
+	B f = scan("%d",n);
 	IF(prime(n))
 	{
-		print("Yes\n");
+		f = print("Yes\n");
 	}
 	ELSE
 	{
-		print("No\n");
+		f = print("No\n");
 	}
 	RET 0;
 	

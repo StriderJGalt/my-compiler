@@ -1,30 +1,30 @@
-I MAIN()
+I main()
 {
-	I n;
-	scan("%d",n);
+	I n = 0;
+	B f = scan("%d",n);
 	I sum = 0;
 	B prime[1000];
 	FOR(I i=0; i<n; i=i+1;)
 	{
 		prime[i] = 1;
 	}
-	FOR (I i=2; i*i <= n; i=i+1;) 
+	FOR (I j=2; j*j <= n; j=j+1;) 
 	{ 
-		IF (prime[i]) 
+		IF (prime[j]) 
 		{ 
-			FOR(I j=i+i; j<=n; j=j+i;)
+			FOR(I k=j+j; k<=n; k=k+j;)
 			{
-				prime[j] = 0; 
+				prime[k] = 0; 
 			}
 		} 
 	}
-	FOR(I i=2; i<n; i=i+1;)
+	FOR(I l=2; l<n; l=l+1;)
 	{
-		IF(prime[i])
+		IF(prime[l])
 		{
-			sum = sum + i;
+			sum = sum + l;
 		}	
 	}
-	print("%d\n",sum);
+	f = print("%d\n",sum);
 	RET 0;
 }

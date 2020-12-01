@@ -1,96 +1,62 @@
 grammar Minic;
 
-prog: global_statements + EOF
+prog: ( declaration | assignment | func_decl )+ EOF
     ;
 
-global_statements: global_statement global_statements
-    | global_statement
+func_decl: TYPE ID '(' ( decl_arg',' )* (decl_arg)? ')' statement             
     ;
 
-global_statement: declaration
-    | assignment
-    | func_decl
+func_call: ID '(' ( arg',' )* (arg)?   ')'              
     ;
 
-func_decl: TYPE ID '(' decl_args ')' rblock
-    | TYPE 'MAIN' '(' decl_args ')' rblock
+decl_arg: TYPE ID                                       #decl_argSimple
+    | TYPE ID'[]'                                       #decl_argArray1D
+    | TYPE ID'[]['INT']'                                #decl_argArray2D
     ;
 
-func_call: ID '(' args ')'
+arg: STRING                                             #argString
+    | expr                                              #argExpr
     ;
 
-decl_args : decl_arg ',' decl_args
-    | decl_arg
-    |
+
+statement: '{' statement+ '}'                           #compoundStatement
+    | assignment                                        #statementAssignment
+    | declaration                                       #statementDeclaration
+    // | func_call ';'                                     #statementFuncCall
+    | 'IF' '(' expr ')' statement                       #statementIf
+    | 'IF' '(' expr ')' statement 'ELSE' statement      #statementIfElse
+    | 'FOR' '(' declaration expr ';'assignment ')' statement   #statementFor
+    | 'WHILE' '(' expr ')' statement                   #statementWhile
+    | 'RET' expr';'                                     #statementRet
     ;
 
-decl_arg: TYPE ID
-    | TYPE ID'[]'
-    | TYPE ID'[][]'
+assignment: ID '=' expr ';'                             #assignmentSimple
+    | ID '['expr']' '=' expr ';'                        #assignmentArrayElement1d
+    | ID '['expr']['expr']' '=' expr ';'                #assignmentArrayElement2d
     ;
 
-args: STRING',' args
-    | expr',' args
-    | STRING
-    | expr
-    |
+
+declaration: TYPE ID '=' expr ';'                       #declarationSimple
+    | TYPE ID '['INT']'';'                                #declarationArray1D
+    | TYPE ID '['INT']['INT']'';'                         #declarationArray2D
     ;
 
-block: '{' statements '}'
-    ;
-
-rblock:  '{' statements 'RET' expr ';' '}'
-    ;
-
-statements: statement statements
-    | 
-    ;
-
-statement: assignment
-    | declaration
-    | func_call ';'
-    | 'IF' '(' expr ')' block
-    | 'IF' '(' expr ')' block 'ELSE' block
-    | 'FOR' '(' declaration expr ';'assignment ')' block
-    | 'WHILE' '(' expr ')' block
-    | 'RET' expr';'
-    ;
-
-assignment: ID '=' expr ';'
-    | ar_elem '=' expr ';'
-    ;
-
-ar_elem: ID '['expr']['expr']'
-    | ID '['expr']'
-    ;
-
-declaration: TYPE id_list';'
-    | TYPE ID '=' expr ';'
-    ;
-
-id_list: ID'['INT']['INT']'',' id_list
-    |ID'['INT']'',' id_list
-    | ID',' id_list
-    | ID'['INT']['INT']'
-    | ID'['INT']'
-    | ID
-    ;
-
-expr: '!' expr
-    | expr ('*'|'/'|'%') expr
-    | expr ('+'|'-') expr
-    | expr ('>'|'>='|'<'|'<=') expr
-    | expr ('=='|'!=') expr
-    | expr '&' expr
-    | expr '|' expr
-    | expr '?' expr ':' expr
-    | FLOAT
-    | INT
-    | func_call
-    | ar_elem
-    | CHAR
-    | ID
-    | '(' expr ')'
+expr: '!' expr                                          #exprNot
+    | expr op=('*'|'/'|'%') expr                        #exprMulDivMod                    
+    | expr op=('+'|'-') expr                            #exprAddSub                
+    | expr op=('>'|'>='|'<'|'<=') expr                  #exprGreaterLesser                        
+    | expr op=('=='|'!=') expr                          #exprEqualNotEqual                
+    | expr '&' expr                                     #exprAnd        
+    | expr '|' expr                                     #exprOr        
+    | expr '?' expr ':' expr                            #exprTernary                    
+    // | FLOAT                                             #exprFloat
+    | INT                                               #exprInt
+    | func_call                                         #exprFuncCall    
+    | ID '['expr']['expr']'                             #expr2DArrayElement    
+    | ID '['expr']'                                     #expr1DArrayElement    
+    | CHAR                                              #exprChar
+    | ID                                                #exprVar
+    | '(' expr ')'                                      #exprParenthesis        
     ;
 
 /*Tokens*/
@@ -98,7 +64,7 @@ expr: '!' expr
 ID  : [a-z][a-zA-Z0-9]*;
 CHAR: ['][a-zA-Z]['];
 INT : [0-9]+;
-FLOAT : [0-9]+.[0-9]+;
+// FLOAT : [0-9]+.[0-9]+;
 STRING: '"' (ESC|.)*? '"' ;
 fragment
 ESC : '\\"' | '\\\\' ;

@@ -2,10 +2,12 @@ I x[100000];
 I larr[100000];
 I rarr[100000];
 
-B merge(I larr[],I l,I rarr[],I r)
+B merge(I l,I r)
 {
-	I i,j,k;
-	i = 0; j = 0; k =0;
+	I i = 0;
+	I j = 0;
+	I k = 0;
+
 
 	WHILE (i<l & j< r)
 	{
@@ -37,9 +39,9 @@ B merge(I larr[],I l,I rarr[],I r)
 	RET 1;
 }
 
-I msort(I n) 
+I ms(I n) 
 {
-	I mid;
+	I mid = 0;
 	IF(n < 2)
 	{
 		RET 0;  
@@ -51,28 +53,28 @@ I msort(I n)
 	{
 		larr[i] = x[i];
 	}
-	FOR(I i = mid;i<n;i=i+1;){
-		rarr[i-mid] = x[i];
+	FOR(I ii = mid;ii<n;ii=ii+1;){
+		rarr[ii-mid] = x[ii];
 	}
 
-	ms(larr,mid);  
-	ms(rarr,n-mid);
-	merge(larr,mid,rarr,n-mid);
+	B f = ms(larr,mid);  
+	f = ms(rarr,n-mid);
+	f = merge(larr,mid,rarr,n-mid);
 	RET 0;
 }
-I MAIN() {
-	I n;	
-	scan("%d",n);
+I main() {
+	I n = 0;	
+	B f = scan("%d",n);
 	FOR (I i=0;i<n;i=i+1;) 
 	{
-		scan("%d",x[i]);
+		f = scan("%d",x[i]);
 	}
 
-	ms(n);
+	f = ms(n);
 
-	FOR (I i=0;i<n;i=i+1;)
+	FOR (I ii=0;ii<n;ii=ii+1;)
 	{
-		print("%d ",x[i]);
+		f = print("%d ",x[ii]);
 	}
 
 	RET 0;

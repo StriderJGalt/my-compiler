@@ -1,6 +1,7 @@
 B insertionSort(I arr[], I n) 
 { 
-    I key, j; 
+    I key = 0;
+    I j = 0; 
     FOR (I i = 1; i < n; i=i+1;)
     { 
         key = arr[i]; 
@@ -16,21 +17,21 @@ B insertionSort(I arr[], I n)
 } 
   
   
-I MAIN() 
+I main() 
 { 
-    I arr[5],n;
-    n = 5;
+    I arr[5];
+    I n = 5;
 
     FOR (I i=0;i<n;i=i+1;)
     {
-        scan("%d",arr[i]);
+        B f = scan("%d",arr[i]);
     }
 
-    insertionSort(arr, n); 
+    f = insertionSort(arr, n); 
     
-    FOR (I i=0;i<n;i=i+1;)
+    FOR (I j=0;j<n;j=j+1;)
     {
-        print("%d ",arr[i]);
+        f = print("%d ",arr[j]);
     } 
   
     RET 0; 

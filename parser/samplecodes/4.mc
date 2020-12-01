@@ -1,4 +1,4 @@
-I MAIN() {
+I main() {
 	I lim = 100000000;
 	I count = 0;
 	I m=2;
@@ -12,6 +12,6 @@ I MAIN() {
 		count = count + n;
 		m = m+1;
 	}
-	print("%d",count);
+	B f = print("%d",count);
 	RET 0;
 }
