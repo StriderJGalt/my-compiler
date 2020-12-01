@@ -8,8 +8,8 @@ using namespace std;
 class MinicBuildASTVisitor : public MinicVisitor
 {
     bool infunc;
-    // bool print_visitfn_name = true;
-    bool print_visitfn_name = false;
+    bool print_visitfn_name = true;
+    //bool print_visitfn_name = false;
     map<string, vardetails> global_variables;
     map<string, fndetails> global_fns;
     map<string, vardetails> current_local_scope;
