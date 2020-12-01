@@ -43,7 +43,7 @@ public:
 
     llvm::Value* visit(ASTProg &node)
     llvm::Value* visit(ASTStatementCompound &node)   
-    
+
     llvm::Value* visit(ASTStatementVariableDeclaration &node)
     {
         llvm::Function *F = Builder->GetInsertBlock()->getParent();
@@ -69,14 +69,46 @@ public:
     llvm::Value* visit(ASTStatementVariableAssignment &node)
     llvm::Value* visit(ASTStatement1DArrayElementAssignment &node)
     llvm::Value* visit(ASTStatement2DArrayElementAssignment &node)
+
     llvm::Value* visit(ASTStatementFunctionDeclaration &node)
+    
     llvm::Value* visit(ASTStatementFunctionDeclarationArgumentVariable &node)
     llvm::Value* visit(ASTStatementFunctionDeclarationArgumentArray1D &node)
     llvm::Value* visit(ASTStatementFunctionDeclarationArgumentArray2D &node)
     llvm::Value* visit(ASTStatementIfElse &node)
     llvm::Value* visit(ASTStatementForLoop &node)
     llvm::Value* visit(ASTStatementWhileLoop &node)
+
     llvm::Value* visit(ASTStatementReturn &node)
+    {
+        llvm::Function* F = Builder->GetInsertBlock()->getParent();
+        llvm::Type* Ty = F->getReturnType();
+        llvm::Value* v = llvm::ConstantInt::get(Context, llvm::APInt(32, 1));
+
+        if(node.getExpr() == nullptr)
+        {
+            LogError("Void return statement in non-void function");
+            return nullptr;
+        }
+
+        v = node.getExpr()->accept(*this);
+
+        unsigned int v_size = v->getType()->getPrimitiveSizeInBits();
+        if (v_size == 0)
+            v_size = v->getType()->getContainedType(0)->getPrimitiveSizeInBits();
+
+        if(Ty->getPrimitiveSizeInBits() != v_size) {
+            std::cout << "somethign went wrong\n";
+            return nullptr;
+        }
+
+        if(!v){
+            std::cerr << "Codegen exiting return statement due to error in " << "return expression" <<endl;
+            return nullptr;
+        }
+        Builder->CreateRet(v);
+        return v;
+    }
 
     llvm::Value* visit(ASTExprFunctionCall &node)
     {
