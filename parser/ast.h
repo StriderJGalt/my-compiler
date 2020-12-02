@@ -111,6 +111,7 @@ public:
     virtual ~ASTStatement()
     {
     }
+    virtual llvm::Value* accept(ASTvisitor &v) = 0;
 };
 
 class ASTProg : public ASTnode
@@ -131,6 +132,7 @@ public:
 class ASTExpr : public ASTnode
 {
 public:
+    virtual llvm::Value* accept(ASTvisitor &v) = 0;
 };
 
 
@@ -547,18 +549,31 @@ public:
 
 class ASTStatementFunctionDeclarationArgument : ASTStatement
 {
+    type datatype;
+    string name;
 public:
     virtual ~ASTStatementFunctionDeclarationArgument()
     {
     }
+    virtual type getType()
+    {
+        return datatype;
+    }
+
+    virtual string getId()
+    {
+        return name;
+    }
+
+    virtual llvm::Value* accept(ASTvisitor &v) = 0;
 };
 
 class ASTStatementFunctionDeclarationArgumentVariable : ASTStatementFunctionDeclarationArgument
 {
-    type datatype;
-    string name;
 
 public:
+    type datatype;
+    string name;
 
     ASTStatementFunctionDeclarationArgumentVariable(type t, string name) : datatype(t), name(name) {}
 

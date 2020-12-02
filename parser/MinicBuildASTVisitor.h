@@ -1,15 +1,14 @@
 #include <iostream>
-#include "ast.h"
-#include <vector>
 #include "MinicVisitor.h"
+
+extern bool DEBUG_PRINT;
 
 using namespace std;
 
 class MinicBuildASTVisitor : public MinicVisitor
 {
     bool infunc;
-    bool print_visitfn_name = true;
-    //bool print_visitfn_name = false;
+    bool print_visitfn_name = DEBUG_PRINT;
     map<string, vardetails> global_variables;
     map<string, fndetails> global_fns;
     map<string, vardetails> current_local_scope;
@@ -52,7 +51,7 @@ public:
         // checking if var is declared
         if(!current_local_scope.count(id) && !global_variables.count(id))
         {
-            cout << "Error: Variable "<< id <<" not declared" << endl;
+            cout << "\033[1;31mError: Variable "<< id <<" not declared \033[0m" << endl;
         }
         if(current_local_scope.count(id) && global_variables.count(id))
         {
@@ -85,7 +84,7 @@ public:
         // checking if var declared
         if(!current_local_scope.count(id) && !global_variables.count(id))
         {
-            cout << "Error: Variable " << id << " not declared" << endl;
+            cout << "\033[1;31mError: Variable " << id << " not declared\033[0m" << endl;
         }
         if(current_local_scope.count(id) && global_variables.count(id))
         {
@@ -121,7 +120,7 @@ public:
         // checking if var declared
         if(!current_local_scope.count(id) && !global_variables.count(id))
         {
-            cout << "Error: Variable " << id << " not declared" << endl;
+            cout << "\033[1;31mError: Variable " << id << " not declared\033[0m" << endl;
         }
         if(current_local_scope.count(id) && global_variables.count(id))
         {
@@ -184,7 +183,7 @@ public:
         }
         else
         {
-            cout << "Error: Invalid Type In visitExprMulDivMod" << endl;
+            cout << "\033[1;31mError: Invalid Type In visitExprMulDivMod\033[0m" << endl;
             type_of_last_eval_expr = I;
         }
 
@@ -226,7 +225,7 @@ public:
         }
         else
         {
-            cout << "Error: Invalid Type In visitExprAddSub" << endl;
+            cout << "\033[1;31mError: Invalid Type In visitExprAddSub\033[0m" << endl;
             type_of_last_eval_expr = I;
         }
 
@@ -272,7 +271,7 @@ public:
             }
             else
             {
-                cout << "Error: Invalid Type In Greater or Lesser Expression" << endl;
+                cout << "\033[1;31mError: Invalid Type In Greater or Lesser Expression\033[0m" << endl;
             }
         }
         type_of_last_eval_expr = B;
@@ -309,7 +308,7 @@ public:
             }
             else
             {
-                cout << "Error: Invalid Type In Equal or Notequal Expression" << endl;
+                cout << "\033[1;31mError: Invalid Type In Equal or Notequal Expression\033[0m" << endl;
             }
         }
         type_of_last_eval_expr = B;
@@ -334,7 +333,7 @@ public:
         // Type Analysis
         if(!((tleft == B) && (tright == B)))
         {
-            cout << "Error: Invalid Type In AND Expression" << endl;
+            cout << "\033[1;31mError: Invalid Type In AND Expression\033[0m" << endl;
         }
         type_of_last_eval_expr = B;
         
@@ -358,7 +357,7 @@ public:
         // Type Analysis
         if(!((tleft == B) && (tright == B)))
         {
-            cout << "Error: Invalid Type In OR Expression" << endl;
+            cout << "\033[1;31mError: Invalid Type In OR Expression\033[0m" << endl;
         }
         type_of_last_eval_expr = B;
 
@@ -399,7 +398,7 @@ public:
         // Type Analysis
         if(type_of_last_eval_expr != B)
         {
-            cout << "Error: Invalid type in Not Expression" <<endl;
+            cout << "\033[1;31mError: Invalid type in Not Expression\033[0m" <<endl;
         }
         type_of_last_eval_expr = B;
 
@@ -423,7 +422,7 @@ public:
         fname = context->ID()->getText();
 
         // cant do this as will show error on recursion
-        
+
         // // checking if fn is declared
         // if(!global_fns.count(fname))
         // {
@@ -533,6 +532,7 @@ public:
         fd.returntype = rt;
         fd.local_variables = current_local_scope;
         
+        if(DEBUG_PRINT)
         if(!current_local_scope.empty())
         {
             cout << "vars in scope of fn " << fname << ": ";
@@ -582,7 +582,7 @@ public:
         //adding var to current_local_scope 
         if(current_local_scope.count(id))
         {
-            cout << "Error : variable "<< id << " already declared in current scope" << endl;
+            cout << "\033[1;31mError : variable "<< id << " already declared in current scope\033[0m" << endl;
         }
         else 
         {
@@ -625,7 +625,7 @@ public:
         //adding var to current_local_scope 
         if(current_local_scope.count(id))
         {
-            cout << "Error : variable "<< id << " already declared in current scope" << endl;
+            cout << "\033[1;31mError : variable "<< id << " already declared in current scope\033[0m" << endl;
         }
         else 
         {
@@ -668,7 +668,7 @@ public:
         //adding var to current_local_scope 
         if(current_local_scope.count(id))
         {
-            cout << "Error : variable "<< id << " already declared in current scope" << endl;
+            cout << "\033[1;31mError : variable "<< id << " already declared in current scope\033[0m" << endl;
         }
         else 
         {
@@ -807,7 +807,7 @@ public:
         // checking if var is declared
         if(!current_local_scope.count(id) && !global_variables.count(id))
         {
-            cout << "Error: Variable " << id << "  not declared" << endl;
+            cout << "\033[1;31mError: Variable " << id << "  not declared\033[0m" << endl;
         }
         if(current_local_scope.count(id) && global_variables.count(id))
         {
@@ -830,7 +830,7 @@ public:
         // checking if var is declared
         if(!current_local_scope.count(id) && !global_variables.count(id))
         {
-            cout << "Error: Variable " << id << "  not declared" << endl;
+            cout << "\033[1;31mError: Variable " << id << "  not declared\033[0m" << endl;
         }
         if(current_local_scope.count(id) && global_variables.count(id))
         {
@@ -854,7 +854,7 @@ public:
         // checking if var is declared
         if(!current_local_scope.count(id) && !global_variables.count(id))
         {
-            cout << "Error: Variable " << id << "  not declared" << endl;
+            cout << "\033[1;31mError: Variable " << id << "  not declared\033[0m" << endl;
         }
         if(current_local_scope.count(id) && global_variables.count(id))
         {
@@ -905,7 +905,7 @@ public:
             //adding var to current_local_scope 
             if(current_local_scope.count(id))
             {
-                cout << "Error : variable "<< id <<" already declared in current scope" << endl;
+                cout << "\033[1;31mError : variable "<< id <<" already declared in current scope\033[0m" << endl;
             }
             else 
             {
@@ -960,7 +960,7 @@ public:
             //adding var to current_local_scope 
             if(current_local_scope.count(id))
             {
-                cout << "Error : variable "<< id << " already declared in current scope" << endl;
+                cout << "\033[1;31mError : variable "<< id << " already declared in current scope\033[0m" << endl;
             }
             else 
             {
@@ -975,7 +975,7 @@ public:
             // adding var to global_vars
             if(global_variables.count(id))
             {
-                cout << "Error : variable "<< id << " already declared in current scope" << endl;
+                cout << "\033[1;31mError : variable "<< id << " already declared in current scope" << endl;
             }
             else
             {
@@ -1022,7 +1022,7 @@ public:
             //adding var to current_local_scope 
             if(current_local_scope.count(id))
             {
-                cout << "Error : variable "<< id << " already declared in current scope" << endl;
+                cout << "\033[1;31mError : variable "<< id << " already declared in current scope\033[0m" << endl;
             }
             else 
             {
@@ -1037,7 +1037,7 @@ public:
             // adding var to global_vars
             if(global_variables.count(id))
             {
-                cout << "Error : variable "<< id << " already declared in current scope" << endl;
+                cout << "\033[1;31mError : variable "<< id << " already declared in current scope" << endl;
             }
             else
             {

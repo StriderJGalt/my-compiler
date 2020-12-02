@@ -1,12 +1,12 @@
 #include <iostream>
-
 #include "antlr4-runtime.h"
 #include "MinicLexer.cpp"
 #include "MinicParser.cpp"
+#include "ast.h"
 #include "MinicBuildASTVisitor.h"
-// #include "ast.h"
+#include "CodegenVisitor.h"
 
-// #include "PostfixVisitor.h"
+bool DEBUG_PRINT = true;
 
 using namespace std;
 using namespace antlr4;
@@ -14,6 +14,7 @@ using namespace antlr4;
 int main(int argc, const char* argv[]) {
     std::ifstream stream;
 
+    if(DEBUG_PRINT)
     cout << "Processing input file " << argv[1] << endl;
     stream.open(argv[1]);
     
@@ -30,8 +31,13 @@ int main(int argc, const char* argv[]) {
 
     ASTProg *program_root = visitor->visitProg(ctx);
     
-    // PostFixVisitor *pv = new PostFixVisitor();
-    // pv->visit(*program_root);
+    // ASTvisitor* generator = new CodegenVisitor();
+    // program_root->accept(*generator);
+
+    if(DEBUG_PRINT)
+    cout << endl;
+
+    // dynamic_cast<CodegenVisitor*>(generator)->generateCode();
 
     return 0;
 }
